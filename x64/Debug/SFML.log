@@ -1,0 +1,3 @@
+﻿  main.cpp
+D:\Code\C++\SFML\main.cpp(13,13): error C2065: 'background': undeclared identifier
+D:\Code\C++\SFML\main.cpp(13,2): error C3861: 'imtTexture': identifier not found
