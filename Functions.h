@@ -41,7 +41,7 @@ sf::Text gameHeading;
 sf::Text creditsHead;
 sf::Text credits;
 sf::Text triesLeft;
-sf::Text categ; 
+sf::Text categ;
 sf::Text guessObject;
 sf::Text pressEsc;
 sf::Text entered;
@@ -113,7 +113,7 @@ void createObjects() {
 	creditsHead.setCharacterSize(85);
 	creditsHead.setStyle(sf::Text::Bold);
 	creditsHead.setString("  Developers\n\n\n\n\nMoral Support");
-	
+
 	//Credits members
 	credits.setFont(chalk);
 	credits.setCharacterSize(85);
@@ -218,7 +218,7 @@ void scalePositionButtons() {
 	creditsHead.setPosition(desktop.width / 2.0 - creditsHead.getGlobalBounds().width / 2, desktop.height * 0.33);
 	credits.setPosition(desktop.width / 2.0 - credits.getGlobalBounds().width / 2, creditsHead.getPosition().y + 100.f);
 }
-	
+
 void exitProg() {
 	if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		window.close();
@@ -514,7 +514,7 @@ void setText() {
 }
 
 void playGame() {
-	//i = 0, j = 0;
+	i = 0, j = 0, count = 0, end = 0, k = 17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
 
 	targetWord = Word(category);
 	guess = targetWord;
