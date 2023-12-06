@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include "Words.h"
 
-bool showButtons = true, isFullscreen = false, musicPlaying = false, showInstr = false, showCredits = false;
+bool showButtons = true, isFullscreen = true, musicPlaying = false, showInstr = false, showCredits = false;
 int i = 0;
 int j = 0; //Number of turns used, j=7 when user loses
 int count = 0; //Number of letters correctly guessed
@@ -49,8 +49,14 @@ sf::Text entered;
 void setText();
 
 void createObjects() {
-	desktop.width = 1280, desktop.height = 720;
-	window.create(sf::VideoMode(desktop.width, desktop.height), "Hangman");
+	if (!isFullscreen) {
+		desktop.width = 1280, desktop.height = 720;
+		window.create(sf::VideoMode(desktop.width, desktop.height), "Hangman");
+	}
+	else {
+		fullscreen.width = 1280, fullscreen.height = 720;
+		window.create(sf::VideoMode(desktop.width, desktop.height), "Hangman", sf::Style::Fullscreen);
+	}
 
 	scale = desktop.width / 1920.0; // 1920 is width of images to be put fullscreen. Initalized at start only
 
@@ -195,10 +201,7 @@ void showTitle() {
 }
 
 void scalePositionButtons() {
-	if (isFullscreen)
-		hangmanSprite.setScale(1, 1);
-	else
-		hangmanSprite.setScale(scale, scale);
+	hangmanSprite.setScale(desktop.width / hangmanSprite.getLocalBounds().width, desktop.width / hangmanSprite.getLocalBounds().width);
 	bgSprite.scale(scale, scale);
 	playSprite.scale(scale, scale);
 	exitSprite.scale(scale, scale);
@@ -514,7 +517,7 @@ void setText() {
 	pressEsc.setFont(chalk);
 	pressEsc.setCharacterSize(70);
 	pressEsc.setString("Press ESC to return to main menu!");
-	pressEsc.setPosition(50.f, desktop.height - pressEsc.getLocalBounds().height);
+	pressEsc.setPosition(50.f, desktop.height - pressEsc.getGlobalBounds().height);
 
 	entered.setFont(chalk);
 	entered.setCharacterSize(70);
@@ -523,7 +526,7 @@ void setText() {
 }
 
 void playGame() {
-	i = 0, j = 0, count = 0, end = 0, k=17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
+	i = 0, j = 0, count = 0, end = 0, k = 17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
 
 	targetWord = Word(category);
 	guess = targetWord;
