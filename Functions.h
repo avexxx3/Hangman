@@ -15,7 +15,7 @@ std::string category;
 std::string targetWord;
 std::string guess; //Guess is the string with dashes equal to word's letters
 std::string originalWord;
-std::string guessed = "Letters Guessed:\n                     \n                   ";
+std::string guessed = "Letters Guessed:\n                     ";
 int k = 17;
 
 void playGame();
@@ -30,7 +30,7 @@ sf::Texture bg; sf::Sprite bgSprite;
 sf::Texture play; sf::Sprite playSprite;
 sf::Texture instructions; sf::Sprite instructionsSprite;
 sf::Texture exiT; sf::Sprite exitSprite;
-sf::Texture instr;sf::Sprite instrSprite;
+sf::Texture instr; sf::Sprite instrSprite;
 sf::Texture rtrn; sf::Sprite rtrnSprite;
 sf::Texture note; sf::Sprite noteSprite;
 sf::Texture credit; sf::Sprite creditSprite;
@@ -195,7 +195,10 @@ void showTitle() {
 }
 
 void scalePositionButtons() {
-	hangmanSprite.setScale(scale, scale);
+	if (isFullscreen)
+		hangmanSprite.setScale(1, 1);
+	else
+		hangmanSprite.setScale(scale, scale);
 	bgSprite.scale(scale, scale);
 	playSprite.scale(scale, scale);
 	exitSprite.scale(scale, scale);
@@ -206,9 +209,14 @@ void scalePositionButtons() {
 	creditSprite.scale(scale, scale);
 	credits.setScale(scale, scale);
 	creditsHead.setScale(scale, scale);
-	gameHeading.setPosition(desktop.width / 2.0 - gameHeading.getLocalBounds().width / 2, 0.f);
+	triesLeft.scale(scale, scale);
+	categ.scale(scale, scale);
+	guessObject.scale(scale, scale);
+	pressEsc.scale(scale, scale);
+	entered.scale(scale, scale);
 
 	float midY = desktop.height / 2.0;
+	gameHeading.setPosition(desktop.width / 2.0 - gameHeading.getLocalBounds().width / 2, 0.f);
 	noteSprite.setPosition(desktop.width - noteSprite.getGlobalBounds().width, 0);
 	playSprite.setPosition(desktop.width / 2.0 - playSprite.getGlobalBounds().width / 2.0, midY); //Moves half the length of image to the left of desktop center, so the center of image aligns with center of desktop
 	instructionsSprite.setPosition(desktop.width / 2.0 - instructionsSprite.getGlobalBounds().width / 2.0, midY + playSprite.getGlobalBounds().height + 10);
@@ -246,7 +254,9 @@ void minimize() {
 	}
 
 	scale = desktop.width * 1.0 / fullscreen.width;
+
 	scalePositionButtons();
+	setText();
 }
 
 void checkEventMenu() {
@@ -366,6 +376,7 @@ void printMenu() {
 void displayData(sf::RenderWindow& window, sf::Sprite sprite, sf::Text triesLeft, sf::Text guessObject, sf::Text categ, sf::Text pressEsc, sf::Text entered, int i, bool end) {
 
 	window.clear();
+	window.draw(bgSprite);
 	window.draw(sprite);
 	window.draw(triesLeft);
 	window.draw(guessObject);
@@ -477,7 +488,7 @@ void setData(int& i, std::string originalWord, sf::Texture& texture, sf::Text& t
 		}
 
 		else
-			turns = "Game over! Your guessObject was " + originalWord + ".";
+			turns = "Game over! Your original word was " + originalWord + ".";
 
 		texture.loadFromFile(path);
 		text.setString(turns);
@@ -485,36 +496,34 @@ void setData(int& i, std::string originalWord, sf::Texture& texture, sf::Text& t
 }
 
 void setText() {
+	triesLeft.setFont(chalk);
 	triesLeft.setCharacterSize(70);
 	triesLeft.setPosition(50.f, 0.f);
-	triesLeft.setString("Tries Left: 7");
-	triesLeft.scale(scale, scale);
-	//std::cout << triesLeft.getLocalBounds().height;
 
+	categ.setFont(chalk);
 	categ.setCharacterSize(70);
 	categ.setString(category);
-	categ.setPosition(desktop.width - categ.getGlobalBounds().width, 0.f);
-	categ.scale(scale, scale);
+	categ.setPosition(desktop.width - categ.getGlobalBounds().width - 10, 0.f);
 
+	guessObject.setFont(chalk);
 	guessObject.setCharacterSize(60);
 	guessObject.setLetterSpacing(500.0 / (50 + guess.length()));
 	guessObject.setString(guess);
 	guessObject.setPosition(0.44 * desktop.width, 0.77 * desktop.height);
-	guessObject.scale(scale, scale);
 
+	pressEsc.setFont(chalk);
 	pressEsc.setCharacterSize(70);
 	pressEsc.setString("Press ESC to return to main menu!");
-	pressEsc.setPosition(50.f, desktop.height - pressEsc.getGlobalBounds().height);
-	pressEsc.scale(scale, scale);
+	pressEsc.setPosition(50.f, desktop.height - pressEsc.getLocalBounds().height);
 
+	entered.setFont(chalk);
 	entered.setCharacterSize(70);
 	entered.setString(guessed);
 	entered.setPosition(desktop.width * 0.65, desktop.height * 0.25);
-	entered.scale(scale, scale);
 }
 
 void playGame() {
-	i = 0, j = 0, count = 0, end = 0, k = 17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
+	i = 0, j = 0, count = 0, end = 0, k=17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
 
 	targetWord = Word(category);
 	guess = targetWord;
@@ -524,15 +533,8 @@ void playGame() {
 		guess[l] = '_';
 	}
 
-	triesLeft.setFont(chalk);
-	categ.setFont(chalk);
-	guessObject.setFont(chalk);
-	pressEsc.setFont(chalk);
-	entered.setFont(chalk);
-
 	setText();
-
-	std::cout << categ.getGlobalBounds().width;
+	setData(j, originalWord, hangman, triesLeft, event);
 
 	while (window.isOpen())
 	{
@@ -542,12 +544,15 @@ void playGame() {
 				window.close();
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F11)) {
+				std::cout << scale << " ";
 				minimize();
+				std::cout << scale << " ";
 			}
 
 			if (event.type == event.KeyReleased && keyPress(event) != '.' && !end && j < 7) {
 				checkInput(j, k, guess, targetWord, guessed, event, count, end);
 				setData(j, originalWord, hangman, triesLeft, event);
+
 				entered.setString(guessed);
 				guessObject.setString(guess);
 			}
