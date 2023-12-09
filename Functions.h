@@ -1,10 +1,11 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <string>
 #include <iostream>
 #include <Windows.h>
 #include "Words.h"
 
-bool showButtons = true, isFullscreen = true, musicPlaying = false, showInstr = false, showCredits = false;
+bool showButtons = true, isFullscreen = false, musicPlaying = false, showInstr = false, showCredits = false;
 int i = 0;
 int j = 0; //Number of turns used, j=7 when user loses
 int count = 0; //Number of letters correctly guessed
@@ -18,7 +19,8 @@ std::string originalWord;
 std::string guessed = "Letters Guessed:\n                     ";
 int k = 17;
 
-void playGame();
+
+sf::Vector2i pos;
 sf::Event event;
 sf::RenderWindow window;
 sf::Music music;
@@ -36,6 +38,9 @@ sf::Texture note; sf::Sprite noteSprite;
 sf::Texture credit; sf::Sprite creditSprite;
 sf::Texture title; sf::Sprite titleSprite;
 sf::Texture hangman; sf::Sprite hangmanSprite;
+sf::Texture playAgain; sf::Sprite playAgainSprite;
+sf::Texture rope; sf::Sprite ropeSprite;
+sf::Texture cursor; sf::Sprite cursorSprite;
 sf::Font chalk;
 sf::Text gameHeading;
 sf::Text creditsHead;
@@ -43,9 +48,12 @@ sf::Text credits;
 sf::Text triesLeft;
 sf::Text categ;
 sf::Text guessObject;
-sf::Text pressEsc;
 sf::Text entered;
+sf::Text winObject;
+sf::Text loseObject;
+sf::Text loseWord;
 
+bool playGame();
 void setText();
 
 void createObjects() {
@@ -53,12 +61,17 @@ void createObjects() {
 		desktop.width = 1280, desktop.height = 720;
 		window.create(sf::VideoMode(desktop.width, desktop.height), "Hangman");
 	}
+
 	else {
 		fullscreen.width = 1280, fullscreen.height = 720;
 		window.create(sf::VideoMode(desktop.width, desktop.height), "Hangman", sf::Style::Fullscreen);
 	}
 
 	scale = desktop.width / 1920.0; // 1920 is width of images to be put fullscreen. Initalized at start only
+
+	//playAgainSprite
+	playAgain.loadFromFile("Hangman\\PlayAgain.png");
+	playAgainSprite.setTexture(playAgain);
 
 	//Hangman sprite
 	hangman.loadFromFile("Hangman\\0.png");
@@ -73,8 +86,12 @@ void createObjects() {
 	clickSound.setBuffer(buffer);
 
 	//Background
-	bg.loadFromFile("Hangman\\Base.png");
+	bg.loadFromFile("Hangman\\black.jpg");
 	bgSprite.setTexture(bg);
+
+	//Rope
+	rope.loadFromFile("Hangman\\rope.png");
+	ropeSprite.setTexture(rope);
 
 	//Play Button
 	play.loadFromFile("Hangman\\Play.png");
@@ -89,7 +106,7 @@ void createObjects() {
 	exitSprite.setTexture(exiT);
 
 	//Instructions Screen
-	instr.loadFromFile("Hangman\\7.png");
+	instr.loadFromFile("Hangman\\instructions.jpg");
 	instrSprite.setTexture(instr);
 
 	//Return Button
@@ -118,12 +135,12 @@ void createObjects() {
 	creditsHead.setFont(chalk);
 	creditsHead.setCharacterSize(85);
 	creditsHead.setStyle(sf::Text::Bold);
-	creditsHead.setString("  Developers\n\n\n\n\nMoral Support");
+	creditsHead.setString("  Developers\n\n\n\n\n\nMoral Support");
 
 	//Credits members
 	credits.setFont(chalk);
 	credits.setCharacterSize(85);
-	credits.setString("Armaghan Atiq\nAbdul Muhaimin\n Faheem Sarwar\n\n\n      Hammad\n    Arooj Khalil");
+	credits.setString("Armaghan Atiq\nAbdul Muhaimin\nFaheem Sarwar\n   Rimsha Irfan\n\n\n      Hammad\n    Arooj Khalil");
 
 	//Title Screen
 	title.loadFromFile("Hangman\\Logo1.jpg");
@@ -201,11 +218,13 @@ void showTitle() {
 }
 
 void scalePositionButtons() {
-	hangmanSprite.setScale(desktop.width / hangmanSprite.getLocalBounds().width, desktop.width / hangmanSprite.getLocalBounds().width);
-	bgSprite.scale(scale, scale);
+	hangmanSprite.scale(desktop.height * 0.75 / hangmanSprite.getGlobalBounds().height, desktop.height * 0.75 / hangmanSprite.getGlobalBounds().height);
+	playAgainSprite.scale(scale, scale);
+	bgSprite.scale(desktop.width * 1.0 / bgSprite.getLocalBounds().width, desktop.width * 1.0 / bgSprite.getLocalBounds().width);
+	ropeSprite.scale(scale, scale);
 	playSprite.scale(scale, scale);
 	exitSprite.scale(scale, scale);
-	instrSprite.scale(scale, scale);
+	instrSprite.scale(desktop.width * 1.0 / instrSprite.getLocalBounds().width, desktop.width * 1.0 / instrSprite.getLocalBounds().width);
 	instructionsSprite.scale(scale, scale);
 	rtrnSprite.scale(scale, scale);
 	noteSprite.scale(scale, scale);
@@ -215,8 +234,10 @@ void scalePositionButtons() {
 	triesLeft.scale(scale, scale);
 	categ.scale(scale, scale);
 	guessObject.scale(scale, scale);
-	pressEsc.scale(scale, scale);
 	entered.scale(scale, scale);
+	winObject.scale(scale, scale);
+	loseObject.scale(scale, scale);
+	loseWord.scale(scale, scale);
 
 	float midY = desktop.height / 2.0;
 	gameHeading.setPosition(desktop.width / 2.0 - gameHeading.getLocalBounds().width / 2, 0.f);
@@ -248,12 +269,14 @@ void minimize() {
 		window.close();
 		window.create(sf::VideoMode(desktop.width, desktop.height), "HANGMAN", sf::Style::Fullscreen);
 		isFullscreen = 1;
+		Sleep(40);
 	}
 
 	else {
 		window.close();
 		window.create(sf::VideoMode(desktop.width, desktop.height), "HANGMAN");
 		isFullscreen = 0;
+		Sleep(40);
 	}
 
 	scale = desktop.width * 1.0 / fullscreen.width;
@@ -262,7 +285,51 @@ void minimize() {
 	setText();
 }
 
+void highlightButtons() {
+	sf::Vector2i pos = sf::Mouse::getPosition(window);
+
+	if (exitSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		exiT.loadFromFile("Hangman\\ExitBorder.png");
+	else
+		exiT.loadFromFile("Hangman\\Exit.png");
+
+	if (creditSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		credit.loadFromFile("Hangman\\CreditsBorder.png");
+	else
+		credit.loadFromFile("Hangman\\Credits.png");
+
+	if (playSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		play.loadFromFile("Hangman\\PlayBorder.png");
+	else
+		play.loadFromFile("Hangman\\Play.png");
+
+	if (instructionsSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		instructions.loadFromFile("Hangman\\InstructionsBorder.png");
+	else
+		instructions.loadFromFile("Hangman\\Instructions.png");
+
+	if (rtrnSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		rtrn.loadFromFile("Hangman\\ReturnBorder.png");
+	else
+		rtrn.loadFromFile("Hangman\\Return.png");
+
+	if (playAgainSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+		playAgain.loadFromFile("Hangman\\PlayAgainBorder.png");
+	else
+		playAgain.loadFromFile("Hangman\\PlayAgain.png");
+
+	exitSprite.setTexture(exiT);
+	creditSprite.setTexture(credit);
+	playSprite.setTexture(play);
+	instructionsSprite.setTexture(instructions);
+	rtrnSprite.setTexture(rtrn);
+	playAgainSprite.setTexture(playAgain);
+}
+
 void checkEventMenu() {
+	sf::Vector2i pos;
+	cursorSprite.setPosition(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)));
+	window.draw(cursorSprite);
 	if (event.type == sf::Event::Closed)
 		window.close();
 
@@ -270,9 +337,13 @@ void checkEventMenu() {
 		minimize();
 	}
 
+	if (event.type == event.MouseMoved || showCredits) {
+		highlightButtons();
+	}
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		sf::Vector2i pos = sf::Mouse::getPosition(window);
+		pos = sf::Mouse::getPosition(window);
 
 		if ((instructionsSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)) || playSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)) || exitSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)) || creditSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos))) && showButtons)
 			clickSound.play();
@@ -285,7 +356,7 @@ void checkEventMenu() {
 			if (playSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
 			{
 				showButtons = false;
-				playGame();
+				while (playGame());
 			}
 
 			showButtons = true;
@@ -308,6 +379,7 @@ void checkEventMenu() {
 
 		if (instructionsSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
 		{
+			rtrnSprite.setPosition(0, desktop.height - rtrnSprite.getGlobalBounds().height);
 			showInstr = true;
 			showButtons = false;
 		}
@@ -328,29 +400,27 @@ void checkEventMenu() {
 }
 
 void printCredits() {
-	while (-(credits.getPosition().y) < credits.getLocalBounds().height + 50) {
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			sf::Vector2i pos = sf::Mouse::getPosition(window);
-			if (rtrnSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
-				return;
-		}
-
+	sf::Vector2i pos;
+	creditsHead.setPosition(desktop.width / 2.0 - creditsHead.getGlobalBounds().width / 2, desktop.height * 0.33);
+	credits.setPosition(desktop.width / 2.0 - credits.getGlobalBounds().width / 2, creditsHead.getPosition().y * 1.33); //seperates credits and Credits head
+	while (-(credits.getPosition().y) < credits.getLocalBounds().height - 100 && !rtrnSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos))) {
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			pos = sf::Mouse::getPosition(window);
 		window.clear();
 		window.draw(bgSprite);
 		window.draw(creditsHead);
 		window.draw(credits);
 		window.draw(rtrnSprite);
 		window.display();
-		credits.setPosition(credits.getPosition().x, credits.getPosition().y - 2);
-		creditsHead.setPosition(creditsHead.getPosition().x, creditsHead.getPosition().y - 2);
-		Sleep(20);
+		credits.setPosition(credits.getPosition().x, credits.getPosition().y - 1.5);
+		creditsHead.setPosition(creditsHead.getPosition().x, creditsHead.getPosition().y - 1.5);
+		Sleep(10);
 	}
 }
 
 void printMenu() {
 	window.clear();
 	window.draw(bgSprite);
-
 	if (showButtons)
 	{
 		window.draw(playSprite);
@@ -359,6 +429,7 @@ void printMenu() {
 		window.draw(noteSprite);
 		window.draw(creditSprite);
 		window.draw(gameHeading);
+		window.draw(ropeSprite);
 	}
 
 	if (showInstr)
@@ -376,26 +447,18 @@ void printMenu() {
 	window.display();
 }
 
-void displayData(sf::RenderWindow& window, sf::Sprite sprite, sf::Text triesLeft, sf::Text guessObject, sf::Text categ, sf::Text pressEsc, sf::Text entered, int i, bool end) {
-
+void displayData() {
 	window.clear();
 	window.draw(bgSprite);
-	window.draw(sprite);
+	window.draw(hangmanSprite);
 	window.draw(triesLeft);
 	window.draw(guessObject);
 	window.draw(entered);
-
-	if (end || i >= 7) {
-		window.draw(pressEsc);
-	}
-
-	else {
-		window.draw(categ);
-	}
+	window.draw(categ);
 	window.display();
 }
 
-char keyPress(sf::Event event) {
+char keyPress() {
 	if (event.key.code == sf::Keyboard::A)
 		return 'a';
 	if (event.key.code == sf::Keyboard::B)
@@ -452,8 +515,8 @@ char keyPress(sf::Event event) {
 		return '.';
 }
 
-void checkInput(int& j, int& k, std::string& guess, std::string& targetWord, std::string& guessed, sf::Event event, int& count, bool& end) {
-	char input = keyPress(event);
+void checkInput() {
+	char input = keyPress();
 	int temp = count;
 	for (int i = 0; i < guess.size(); i++) {
 		if (std::tolower(input) == std::tolower(targetWord[i])) {
@@ -463,7 +526,7 @@ void checkInput(int& j, int& k, std::string& guess, std::string& targetWord, std
 		}
 	}
 
-	if (j < 7) {
+	if (j < 7 && temp == count) {
 		guessed[k] = input;
 		k = k + 3;
 	}
@@ -477,25 +540,22 @@ void checkInput(int& j, int& k, std::string& guess, std::string& targetWord, std
 	}
 }
 
-void setData(int& i, std::string originalWord, sf::Texture& texture, sf::Text& text, sf::Event& event) {
-	if (i < 8) {
+void setData() {
+	if (j < 8) {
 		std::string turns, num, path;
-		num = std::to_string(i);
+		num = std::to_string(j);
 		path = "Hangman\\x.png";
 		path[8] = num[0];
-
-		if (7 - i != 0) {
-			num = std::to_string(7 - i);
-			turns = "Tries Left: x";
-			turns[12] = num[0];
-		}
-
-		else
-			turns = "Game over! Your original word was " + originalWord + ".";
-
-		texture.loadFromFile(path);
-		text.setString(turns);
+		num = std::to_string(7 - j);
+		turns = "Tries Left: x";
+		turns[12] = num[0];
+		hangman.loadFromFile(path);
+		hangmanSprite.setTexture(hangman);
+		hangmanSprite.setPosition(20, 100);
+		triesLeft.setString(turns);
 	}
+	entered.setString(guessed);
+	guessObject.setString(guess);
 }
 
 void setText() {
@@ -514,30 +574,90 @@ void setText() {
 	guessObject.setString(guess);
 	guessObject.setPosition(0.44 * desktop.width, 0.77 * desktop.height);
 
-	pressEsc.setFont(chalk);
-	pressEsc.setCharacterSize(70);
-	pressEsc.setString("Press ESC to return to main menu!");
-	pressEsc.setPosition(50.f, desktop.height - pressEsc.getGlobalBounds().height);
-
 	entered.setFont(chalk);
 	entered.setCharacterSize(70);
 	entered.setString(guessed);
 	entered.setPosition(desktop.width * 0.65, desktop.height * 0.25);
+
+	winObject.setFont(chalk);
+	winObject.setCharacterSize(150);
+	winObject.setString("You win!");
+	winObject.setPosition((desktop.width - winObject.getGlobalBounds().width) / 2, 20);
+
+	loseObject.setFont(chalk);
+	loseObject.setCharacterSize(150);
+	loseObject.setString("You lose!");
+	loseObject.setPosition((desktop.width - loseObject.getGlobalBounds().width) / 2, 20);
+
+	loseWord.setFont(chalk);
+	loseWord.setCharacterSize(70);
+	loseWord.setString("Your original word was " + originalWord);
+	loseWord.setPosition((desktop.width - loseWord.getGlobalBounds().width) / 2, desktop.height - loseWord.getGlobalBounds().height-20);
 }
 
-void playGame() {
+bool endScreen() {
+	rtrnSprite.setPosition((desktop.width - rtrnSprite.getGlobalBounds().width) / 2, (desktop.height - rtrnSprite.getGlobalBounds().height) / 2);
+	playAgainSprite.setPosition(rtrnSprite.getPosition().x, rtrnSprite.getPosition().y + playAgainSprite.getGlobalBounds().height + 20);
+	while (1) {
+		while (window.pollEvent(event)) {
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				pos = sf::Mouse::getPosition(window);
+				if (rtrnSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos))) {
+					Sleep(200);
+					return 0;
+				}
+
+				if (playAgainSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+					return 1;
+			}
+
+			if (event.type == event.MouseMoved) {
+				pos = sf::Mouse::getPosition(window);
+				if (rtrnSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+					rtrn.loadFromFile("Hangman\\ReturnBorder.png");
+				else
+					rtrn.loadFromFile("Hangman\\Return.png");
+
+				if (playAgainSprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(pos)))
+					playAgain.loadFromFile("Hangman\\PlayAgainBorder.png");
+				else
+					playAgain.loadFromFile("Hangman\\PlayAgain.png");
+
+				rtrnSprite.setTexture(rtrn);
+				playAgainSprite.setTexture(playAgain);
+			}
+
+			window.clear();
+			window.draw(bgSprite);
+			if (end) {
+				window.draw(winObject);
+			}
+
+			else {
+				window.draw(loseWord);
+				window.draw(loseObject);
+			}
+			window.draw(playAgainSprite);
+			window.draw(rtrnSprite);
+			window.display();
+		}
+	}
+}
+
+bool playGame() {
 	i = 0, j = 0, count = 0, end = 0, k = 17, guessed = "Letters Guessed:\n                                               ", triesLeft.setString("Tries Left: 7");
+	sf::Vector2i pos;
 
 	targetWord = Word(category);
 	guess = targetWord;
 	originalWord = targetWord;
-
+	std::cout << originalWord;
 	for (int l = 0; l < targetWord.length(); l++) {
 		guess[l] = '_';
 	}
 
 	setText();
-	setData(j, originalWord, hangman, triesLeft, event);
+	setData();
 
 	while (window.isOpen())
 	{
@@ -552,21 +672,22 @@ void playGame() {
 				std::cout << scale << " ";
 			}
 
-			if (event.type == event.KeyReleased && keyPress(event) != '.' && !end && j < 7) {
-				checkInput(j, k, guess, targetWord, guessed, event, count, end);
-				setData(j, originalWord, hangman, triesLeft, event);
 
-				entered.setString(guessed);
-				guessObject.setString(guess);
+
+			if (event.type == event.KeyReleased && keyPress() != '.' && !end && j < 7) {
+				checkInput();
+				setData();
 			}
 
-			if (end)
-				triesLeft.setString("Congratulations!");
+			else if (end || j >= 7) {
+				Sleep(500);
+				if (endScreen())
+					return 1;
+				else
+					return 0;
+			}
 
-			displayData(window, hangmanSprite, triesLeft, guessObject, categ, pressEsc, entered, j, end);
-
-			if ((end || j >= 7) && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-				return;
+			displayData();
 		}
 	}
 }
