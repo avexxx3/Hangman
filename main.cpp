@@ -10,7 +10,7 @@ int main() {
 
 	scalePositionButtons();
 
-	//showTitle();
+	showTitle();
 
 	while (window.isOpen()) {
 
