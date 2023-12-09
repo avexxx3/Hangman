@@ -3,37 +3,107 @@
 #include <time.h>
 
 std::string Animal() {
-	std::string array[100] = { "Horse", "Donkey", "Tiger", "Lion", "Panther", "Leopard", "Cheetah", "Bear", "Elephant", "Capybara", "Turtle", "Tortoise", "Crocodile", "Rabbit", "Porcupine", "Hare", "Pigeon", "Albatross", "Crow", "Fish", "Dolphin", "Frog", "Whale", "Alligator", "Eagle", "Squirrel", "Ostrich", "Fox", "Goat", "Jackal", "Emu", "Armadillo", "Eel", "Goose", "Rattlesnake", "Wolf", "Beagle", "Gorilla", "Chimpanzee", "Monkey", "Beaver", "Orangutan", "Antelope", "Bat", "Badger", "Giraffe", "Hermit Crab", "Giant Panda", "Hamster", "Cobra", "Shark", "Camel", "Hawk", "Deer", "Chameleon", "Hippopotamus", "Jaguar", "Chihuahua", "King Cobra", "Ibex", "Lizard", "Koala", "Kangaroo", "Iguana", "Llama", "Chinchillas", "Dodo", "Jellyfish", "Rhinoceros", "Hedgehog", "Zebra", "Possum", "Wombat", "Bison", "Bull", "Buffalo", "Sheep", "Meerkat", "Mouse", "Otter", "Sloth", "Owl", "Vulture", "Flamingo", "Racoon", "Mole", "Duck", "Swan", "Lynx", "Monitor lizard", "Elk", "Boar", "Lemur", "Mule", "Baboon", "Mammoth", "Whale", "Rat", "Snake", "Peacock" };
-	srand(time(0));
-	return array[rand() % 100];
+    std::string array[50] = { "Horse", "Tiger", "Lion", "Elephant", "Turtle", "Crocodile", "Rabbit", "Dolphin", "Frog", "Whale", "Eagle", "Fox", "Goat", "Monkey", "Antelope", "Bat", "Giraffe", "Panda", "Cobra", "Shark", "Camel", "Hawk", "Deer", "Hippopotamus", "Jaguar", "Kangaroo", "Iguana", "Llama", "Lizard", "Koala", "Chameleon", "Chihuahua", "Wolf", "Zebra", "Possum", "Wombat", "Bison", "Buffalo", "Sheep", "Meerkat", "Mouse", "Sloth", "Owl", "Vulture", "Racoon", "Mole", "Snake"};
+    srand(time(0));
+	return array[rand() % 50];
 }
 
 std::string Country() {
-	std::string array[156] = { "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burundi", "Cambodia", "Cameroon", "Canada", "Chad", "Chile", "China", "Colombia", "Comoros", "Croatia", "Cuba", "Cyprus", "Denmark", "Djibouti", "Dominica", "Ecuador", "Egypt", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Namibia", "Nauru", "Nepal", "Netherlands", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Samoa", "Senegal", "Serbia", "Seychelles", "Singapore", "Slovakia", "Slovenia", "Somalia", "Spain", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe" };
+    std::string array[146] = {
+        "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria", "Bangladesh", "Belgium", "Brazil", "Canada",
+        "Chile", "China", "Colombia", "Croatia", "Cuba", "Denmark", "Egypt", "Finland", "France", "Germany",
+        "Greece", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Japan", "Kenya",
+        "Mexico", "Netherlands", "NewZealand", "Nigeria", "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal",
+        "Russia", "SaudiArabia", "SouthAfrica", "SouthKorea", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "UnitedKingdom",
+        "UnitedStates"};
 	srand(time(0));
-	return array[rand() % 156];
+    return array[rand() % 146];
 }
+
 
 std::string Fruits() {
-	std::string array[86] = { "Apple", "Apricot", "Avocado", "Banana", "Blackberry", "Blueberry", "Cantaloupe", "Cherry", "Coconut", "Cranberry", "Date", "Dragonfruit", "Elderberry", "Fig", "Grape", "Grapefruit", "Guava", "Honeydew", "Jackfruit", "Kiwi", "Kumquat", "Lemon", "Lime", "Lychee", "Mango", "Mulberry", "Nectarine", "Orange", "Papaya", "Peach", "Pear", "Pineapple", "Plum", "Pomegranate", "Quince", "Raspberry", "Redcurrant", "Starfruit", "Strawberry", "Tangerine", "Watermelon", "Acerola", "Appleberry", "Blackcurrant", "Boysenberry", "Carambola", "Cherimoya", "Cranberry", "Currant", "Dewberry", "Durian", "Elderberry", "Feijoa", "Gooseberry", "Huckleberry", "Jambul", "Kumquat", "Longan", "Loquat", "Lychee", "Mandarin", "Mamey", "Marula", "Medlar", "Mombin", "Mulberry", "Orange", "Papaw", "Pawpaw", "Persimmon", "Pineberry", "Pineapple", "Plum", "Pomegranate", "Pomelo", "Quince", "Redcurrant", "Rhubarb", "Soursop", "Starfruit", "Tamarillo", "Chayote", "Cherimoya", "Jackfruit", "Loquat", "Serviceberry" };
-	srand(time(0));
-	return array[rand() % 86];
+    std::string array[30] = { "Apple", "Banana", "Orange", "Grapes", "Strawberry", "Watermelon", "Pineapple", "Mango", "Peach", "Pear", "Cherry", "Blueberry", "Raspberry", "Blackberry", "Kiwi", "Lemon", "Lime", "Coconut", "Pomegranate", "Avocado", "Plum", "Cranberry", "Fig", "Apricot", "Papaya", "Grapefruit", "Tangerine", "Melon", "Guava", "Lychee" };
+    srand(time(0));
+	return array[rand() % 30];
 }
 
+
+std::string Colors() {
+    std::string array[25] = { "Red", "Blue", "Green", "Yellow", "Orange", "Purple", "Pink", "Brown", "Black", "White", "Gray", "Cyan", "Magenta", "Lavender", "Teal", "Maroon", "Gold", "Silver", "Turquoise", "Olive", "Violet", "Indigo", "Beige", "Coral", "Salmon" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string Sports() {
+    std::string array[25] = { "Football", "Basketball", "Soccer", "Tennis", "Baseball", "Golf", "Swimming", "Volleyball", "Hockey", "Rugby", "Boxing", "Cycling", "Wrestling", "Athletics", "Cricket", "Badminton", "Skating", "Skiing", "Gymnastics", "TableTennis", "Archery", "Diving", "Surfing", "Squash", "Fencing" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string Professions() {
+    std::string array[25] = { "Doctor", "Teacher", "Engineer", "Lawyer", "Chef", "Police", "Firefighter", "Artist", "Musician", "Writer", "Actor", "Nurse", "Scientist", "Athlete", "Pilot", "Dentist", "Journalist", "Programmer", "Entrepreneur", "Designer", "Veterinarian", "Electrician", "Plumber", "Mechanic", "Carpenter" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string FoodDrinks() {
+    std::string array[25] = { "Pizza", "Burger", "Coffee", "Pasta", "Sandwich", "Sushi", "IceCream", "Cake", "Chocolate", "Salad", "Juice", "Tea", "Soup", "Steak", "Wine", "Beer", "Bread", "Taco", "Smoothie", "Pancake", "Lemonade", "Muffin", "Popcorn", "Donut", "Cupcake" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string Vehicles() {
+    std::string array[25] = { "Car", "Motorcycle", "Bicycle", "Truck", "Bus", "Train", "Airplane", "Helicopter", "Boat", "Scooter", "Subway", "Taxi", "Van", "Ambulance", "Jet", "Ferry", "CruiseShip", "Segway", "Yacht", "RV", "Glider", "Zeppelin", "Skateboard", "GolfCart", "Spaceship" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string Space() {
+    std::string array[25] = { "Sun", "Moon", "Earth", "Mars", "Saturn", "Jupiter", "Pluto", "Neptune", "Galaxy", "Comet", "Meteor", "Asteroid", "Nebula", "BlackHole", "Quasar", "Supernova", "Spaceship", "Rocket", "Cosmos", "Orbit", "Constellation", "Lunar", "Solar", "Interstellar", "Telescope" };
+    srand(time(0));
+	return array[rand() % 25];
+}
+
+std::string VideoGames() {
+    std::string array[25] = { "Mario", "Zelda", "Pacman", "Tetris", "Minecraft", "Fortnite", "CallofDuty", "FIFA", "Pokemon", "Overwatch", "Tekken", "AssassinsCreed", "LeagueofLegends", "MortalKombat", "Sonic", "Halo", "GTA", "RedDead", "Fallout", "Pubg", "MetalSlug", "Battlefield", "Destiny", "CounterStrike", "ResidentEvil" };
+    srand(time(0));
+	return array[rand() % 25];
+}
 std::string Word(std::string& category) {
 	srand(time(0));
-	int num = rand() % 3;
+	int num = rand() % 10;
 	switch (num) {
 	case 0:
-		category = "Animal";
+		category = "Animals";
 		return(Animal());
 
 	case 1:
-		category = "Country";
+		category = "Countries";
 		return(Country());
 
 	case 2:
 		category = "Fruits";
 		return(Fruits());
+	case 3:
+		category = "Colors";
+		return(Colors());
+	case 4:
+		category = "Sports";
+		return(Sports());
+	case 5:
+		category = "Professions";
+		return(Professions());
+	case 6:
+		category = "Food/Drinks";
+		return(FoodDrinks());
+	case 7:
+		category = "Vehicles";
+		return(Vehicles());
+	case 8:
+		category = "Space";
+		return(Space());
+	case 9:
+		category = "Video Games";
+		return(VideoGames());
 	}
 }
